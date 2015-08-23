@@ -3,6 +3,7 @@
 """
 Views for generating ical feeds.
 """
+import six
 
 from datetime import datetime
 from calendar import timegm
@@ -105,9 +106,10 @@ class ICalFeed(Feed):
             # function and catching the TypeError, because something inside
             # the function may raise the TypeError. This technique is more
             # accurate.
-            if hasattr(attr, 'func_code'):
-                argcount = attr.func_code.co_argcount
-            else:
+
+            try:
+                argcount = six.get_function_code(attr).co_argcount
+            except AttributeError:
                 argcount = attr.__call__.func_code.co_argcount
             if argcount == 2:  # one argument is 'self'
                 return attr(obj)

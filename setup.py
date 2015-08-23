@@ -23,6 +23,7 @@ setup(
     install_requires=[
         'Django>=1.3.4',
         'icalendar>=3.1',
+        'six>=1.9.0'
     ],
     packages=find_packages(),
     test_suite='tests.main',
