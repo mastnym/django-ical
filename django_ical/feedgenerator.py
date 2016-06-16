@@ -36,6 +36,7 @@ from django.utils.feedgenerator import SyndicationFeed
 __all__ = (
     'ICal20Feed',
     'DefaultFeed',
+    'DynamicDefaultFeed',
 )
 
 FEED_FIELD_MAP = (
@@ -104,3 +105,23 @@ class ICal20Feed(SyndicationFeed):
             calendar.add_component(event)
 
 DefaultFeed = ICal20Feed
+
+class DynamicFieldsICal20Feed(ICal20Feed):
+    def write_items(self, calendar):
+        """
+        Write all events to the calendar
+        """
+        for item in self.items:
+            event = Event()
+            for ifield, efield in ITEM_EVENT_FIELD_MAP:
+                val = item.get(ifield)
+                if val is not None:
+                    event.add(efield, val)
+            # add dynamic items
+            for key, val in item.items():
+                if key.startswith("x-") and val is not None:
+                    event.add(key, val)
+            calendar.add_component(event)
+
+
+DynamicDefaultFeed = DynamicFieldsICal20Feed

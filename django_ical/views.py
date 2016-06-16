@@ -142,3 +142,17 @@ class ICalFeed(Feed):
             if val:
                 kwargs[field] = val
         return kwargs
+
+class DynamicFieldsICalFeed(ICalFeed):
+    feed_type = feedgenerator.DynamicDefaultFeed
+
+    def item_extra_kwargs(self, obj):
+        kwargs = super().item_extra_kwargs(obj)
+        # search for dynamic attrs
+        for method_name in dir(self):
+            if method_name.startswith("dynamic_item_"):
+                field = "x-{fieldname}".format(fieldname=method_name.replace("dynamic_item_", ""))
+                val = self._get_dynamic_attr(method_name, obj)
+                if val:
+                    kwargs[field] = val
+        return kwargs
